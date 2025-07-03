@@ -30,18 +30,18 @@ def main(infile: str, outfile: str, cronfile: str):
                     command: str = k["command"]
                     command_parts = re.split(r"\s+", command)
                     # print(command_parts)
-                    print("name: EDITME", file=o)
-                    print("ansible.builtin.cron:", file=o)
-                    print("\tcron_file: " + cronfile, file=o)
-                    print("\tuser: " + command_parts[0], file=o)
-                    print("\tminute: " + "".join(k["minute"]), file=o)
-                    print("\thour: " + "".join(k["hour"]), file=o)
-                    print("\tmonth: " + "".join(k["month"]), file=o)
-                    print("\tday: " + "".join(k["day_of_month"]), file=o)
-                    print("\tweekday: " + "".join(k["day_of_week"]), file=o)
-                    print("\tname: DESCRIBEME", file=o)
-                    print("\tjob: " + "\"" + " ".join(command_parts[1:]) + "\"", file=o)
-                    print("", file=o)
+                    header = "name: EDITME\nansible.builtin.cron:"
+                    cro = "\tcron_file: " + cronfile
+                    user = "\tuser: " + command_parts[0]
+                    minute = "\tminute: " + "".join(k["minute"])
+                    hour = "\thour: " + "".join(k["hour"])
+                    month = "\tmonth: " + "".join(k["month"])
+                    day = "\tday: " + "".join(k["day_of_month"])
+                    weekday = "\tweekday: " + "".join(k["day_of_week"])
+                    cronname = "\tname: DESCRIBEME"
+                    job = "\tjob: " + "\"" + " ".join(command_parts[1:]) + "\"" + "\n"
+                    res = "\n".join((header, cro, user, minute, hour, month, day, weekday, cronname, job))
+                    print(res, file=o)
 
 if __name__ == "__main__":
     main()
