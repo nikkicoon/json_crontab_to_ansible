@@ -1,0 +1,1 @@
+Short script to convert the output of `cat /etc/crontab | jq --crontab -p` to an output consumable by ansible.builtin.cron.

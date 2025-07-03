@@ -1,0 +1,32 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.dependencies]
+click = "8.2.1"
+
+[project]
+name = "json-crontab-to-ansible"
+version = "0.0.1"
+description = "convert the output of `cat /etc/crontab | jq --crontab -p` to an ansible cron entry"
+authors = [
+    {"name"="Ronja Nikita Gillmann", "email"="ronja@klang.is"}
+]
+license = "BSD-2-Clause"
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
+keywords = ["ansible", "cron", "crontab", "json"]
+readme = "README"
+requires-python = ">=3.13"
+
+[dependency-groups]
+dev = [
+    "black",
+    "pytest == 8.4.0"
+]
+lint = [
+    "ruff",
+]
+
+[tool.ruff.lint]
