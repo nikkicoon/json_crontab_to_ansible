@@ -23,13 +23,13 @@ def main(infile: str, outfile: str, cronfile: str):
     outfile = outfile + "." + str(n)
     with open(infile, "r") as f:
         data = json.load(f)
-        print(data)
+        # print(data)
         if "schedule" in data:
             for k in data["schedule"]:
                 with open(outfile, "a") as o:
                     command: str = k["command"]
                     command_parts = re.split(r"\s+", command)
-                    print(command_parts)
+                    # print(command_parts)
                     print("name: EDITME", file=o)
                     print("ansible.builtin.cron:", file=o)
                     print("\tcron_file: " + cronfile, file=o)
