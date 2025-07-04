@@ -4,6 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.dependencies]
 click = "8.2.1"
+python-crontab = "3.2.0"
 
 [project]
 name = "json-crontab-to-ansible"
