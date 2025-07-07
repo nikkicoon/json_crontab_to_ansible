@@ -2,6 +2,7 @@ import datetime
 import json
 import re
 import sys
+from json import JSONDecodeError
 
 import click
 from crontab import CronTab
@@ -30,7 +31,11 @@ def main(infile: str|click.File, outfile: str, cronfile: str, user: str, filetyp
     with infile as f:
         match filetype:
             case "json":
-                data = json.load(f)
+                try:
+                    data = json.load(f)
+                except JSONDecodeError as e:
+                    print(f"json decoding error with file {f.name}")
+                    sys.exit(1)
                 # print(data)
                 if "schedule" in data:
                     with open(outfile, "a") as o:
