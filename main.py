@@ -16,7 +16,8 @@ from crontab import CronTab
 @click.option("--filetype", default="json")
 @click.option("--indent", default=4)
 @click.option("--defaultname", default=True)
-def main(infile: str|click.File, outfile: str, cronfile: str, user: str, filetype: str, indent: int, defaultname: bool):
+@click.option("--defaultjobname", default=True)
+def main(infile: str|click.File, outfile: str, cronfile: str, user: str, filetype: str, indent: int, defaultname: bool, defaultjobname: bool):
     """outputs an ansible entry.
 
     \b
@@ -50,7 +51,6 @@ def main(infile: str|click.File, outfile: str, cronfile: str, user: str, filetyp
                                 command: str = k["command"]
                                 command_parts = re.split(r"\s+", command)
                                 # print(command_parts)
-                            header = _tab_header + "- name: EDITME\n" + _tab_header_two + "ansible.builtin.cron:"
                             cro = _tab_body + "cron_file: " + cronfile
                             if len(command_parts) > 0:
                                 user = _tab_body + "user: " + command_parts[0]
@@ -76,6 +76,12 @@ def main(infile: str|click.File, outfile: str, cronfile: str, user: str, filetyp
                                 cronname = _tab_body + "name: " + "\"" + path + "\""
                             else:
                                 cronname = _tab_body + "name: DESCRIBEME"
+                            if defaultjobname:
+                                # TODO: provide string
+                                jobname = cronfile + " | + set cronjob for " + path if path != "" else ""
+                            else:
+                                jobname = "EDITME"
+                            header = _tab_header + "- name: " + jobname + "\n" + _tab_header_two + "ansible.builtin.cron:"
                             res = "\n".join(filter(None, (header, cro, user, minute, hour, month, day, weekday, cronname, job)))
                             print(res, file=o)
             case "cron":
