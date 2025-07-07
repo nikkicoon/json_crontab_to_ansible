@@ -65,8 +65,8 @@ def main(infile: str|click.File, outfile: str, cronfile: str, user: str, filetyp
                                 job = "\tjob: " + "\"" + " ".join(command_parts[1:]) + "\"" + "\n"
                             else:
                                 job = None
-                        res = "\n".join(filter(None, (header, cro, user, minute, hour, month, day, weekday, cronname, job)))
-                        print(res, file=o)
+                            res = "\n".join(filter(None, (header, cro, user, minute, hour, month, day, weekday, cronname, job)))
+                            print(res, file=o)
             case "cron":
                 data = CronTab(tabfile=infile.name)
                 with open(outfile, "a") as o:
