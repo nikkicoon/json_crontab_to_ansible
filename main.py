@@ -1,5 +1,6 @@
 import datetime
 import json
+import pathlib
 import re
 import sys
 from json import JSONDecodeError
@@ -13,12 +14,14 @@ from crontab import CronTab
 @click.option("--cronfile", default="foo")
 @click.option("--user", default="root")
 @click.option("--filetype", default="json")
-def main(infile: str|click.File, outfile: str, cronfile: str, user: str, filetype: str):
+@click.option("--indent", default=4)
+@click.option("--defaultname", default=True)
+def main(infile: str|click.File, outfile: str, cronfile: str, user: str, filetype: str, indent: int, defaultname: bool):
     """outputs an ansible entry.
 
     \b
-    name: foobar|ARG
-    ansible.builtin.cron:
+    - name: foobar|ARG
+      ansible.builtin.cron:
         cron_file: ARG
         user: str(command[0])
         minute: int
@@ -28,6 +31,9 @@ def main(infile: str|click.File, outfile: str, cronfile: str, user: str, filetyp
 """
     n = int(datetime.datetime.timestamp(datetime.datetime.now()))
     outfile = outfile + "." + str(n)
+    _tab_header = "  " * int(indent/2)
+    _tab_header_two = _tab_header + "  "
+    _tab_body = _tab_header_two + "  "
     with infile as f:
         match filetype:
             case "json":
@@ -44,27 +50,32 @@ def main(infile: str|click.File, outfile: str, cronfile: str, user: str, filetyp
                                 command: str = k["command"]
                                 command_parts = re.split(r"\s+", command)
                                 # print(command_parts)
-                            header = "name: EDITME\nansible.builtin.cron:"
-                            cro = "\tcron_file: " + cronfile
+                            header = _tab_header + "- name: EDITME\n" + _tab_header_two + "ansible.builtin.cron:"
+                            cro = _tab_body + "cron_file: " + cronfile
                             if len(command_parts) > 0:
-                                user = "\tuser: " + command_parts[0]
+                                user = _tab_body + "user: " + command_parts[0]
                             else:
-                                user = " ".join(("\tuser:", user))
+                                user = " ".join((_tab_body + "user:", user))
                             if "minute" in k:
-                                minute = "\tminute: " + "".join(k["minute"]) if k["minute"] != ["*"] else None
+                                minute = _tab_body + "minute: " + "".join(k["minute"]) if k["minute"] != ["*"] else None
                             if "hour" in k:
-                                hour = "\thour: " + "".join(k["hour"]) if k["hour"] != ["*"] else None
+                                hour = _tab_body + "hour: " + "".join(k["hour"]) if k["hour"] != ["*"] else None
                             if "month" in k:
-                                month = "\tmonth: " + "".join(k["month"]) if k["month"] != ["*"] else None
+                                month = _tab_body + "month: " + "".join(k["month"]) if k["month"] != ["*"] else None
                             if "day_of_month" in k:
-                                day = "\tday: " + "".join(k["day_of_month"]) if k["day_of_month"] != ["*"] else None
+                                day = _tab_body + "day: " + "".join(k["day_of_month"]) if k["day_of_month"] != ["*"] else None
                             if "day_of_week" in k:
-                                weekday = "\tweekday: " + "".join(k["day_of_week"]) if k["day_of_week"] != ["*"] else None
-                            cronname = "\tname: DESCRIBEME"
+                                weekday = _tab_body + "weekday: " + "".join(k["day_of_week"]) if k["day_of_week"] != ["*"] else None
                             if len(command_parts) > 1:
-                                job = "\tjob: " + "\"" + " ".join(command_parts[1:]) + "\"" + "\n"
+                                job = _tab_body + "job: " + "\"" + " ".join(command_parts[1:]) + "\"" + "\n"
                             else:
                                 job = None
+                            if defaultname and len(command_parts) > 1:
+                                path = pathlib.Path("".join(command_parts[2:])).name
+                                path = path.rstrip(")")
+                                cronname = _tab_body + "name: " + "\"" + path + "\""
+                            else:
+                                cronname = _tab_body + "name: DESCRIBEME"
                             res = "\n".join(filter(None, (header, cro, user, minute, hour, month, day, weekday, cronname, job)))
                             print(res, file=o)
             case "cron":
